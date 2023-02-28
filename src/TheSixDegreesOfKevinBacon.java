@@ -12,8 +12,13 @@ public class TheSixDegreesOfKevinBacon {
 
         this.levelOneActors = new ArrayList<>();
         this.levelOneMovies = new ArrayList<>();
+        this.levelsOfMovies = new ArrayList<>();
+        this.levelsOfActors = new ArrayList<>();
         makeLevelOne(); //in terms of actors
-        makeNewLevel(levelsOfActors);
+        ArrayList<String> newlyCreatedActors = makeNewLevel(levelOneActors);
+        for (int i = 0; i < 4; i ++){
+            newlyCreatedActors = makeNewLevel(newlyCreatedActors);
+        }
     }
 
     public void makeLevelOne(){
@@ -25,14 +30,24 @@ public class TheSixDegreesOfKevinBacon {
             }
         }
         Collections.sort(levelOneActors);//not necessary I think
+        levelsOfActors.add(levelOneActors);
+        levelsOfMovies.add(levelOneMovies);
     }
 
-    public void makeNewLevel(ArrayList<String> actorNames){
+    public ArrayList<String> makeNewLevel(ArrayList<String> actorNames){
         ArrayList<String> newLevelActor = new ArrayList<>();
         ArrayList<SimpleMovie> newLevelMovies = new ArrayList<>();
         for (String name : actorNames){
-
+            for (SimpleMovie movie : movies){
+                if (movie.getActors().contains(name)){
+                    newLevelMovies.add(movie);
+                    newLevelActor.addAll(movie.getActors());
+                }
+            }
         }
+        levelsOfMovies.add(newLevelMovies);
+        levelsOfActors.add(newLevelActor);
+        return newLevelActor;
     }
 
     public HashMap<ArrayList<String>, ArrayList>
@@ -51,8 +66,20 @@ public class TheSixDegreesOfKevinBacon {
     }
 
     public void dummyTesting(String nameToLookFor){
-        String track = "";
+        ArrayList<String> track = new ArrayList<>();
+        track.add(nameToLookFor);
         int degree = 0;
+        boolean found = false;
+        while (!found && degree < 6){
+            if (levelsOfActors.get(degree).contains(nameToLookFor)){
+                for (SimpleMovie movie : levelsOfMovies.get(degree)){
+                    if (movie.getActors().contains(nameToLookFor)){
+                        track.add(movie.getTitle());
+                    }
+                }
+            }
+            degree ++;
+        }
         if (levelOneActors.contains(nameToLookFor)){
             for (SimpleMovie movie : levelOneMovies){
                 if (movie.getActors().contains(nameToLookFor)){
